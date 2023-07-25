@@ -129,4 +129,6 @@ class TasksService {
   }
 }
 
-module.exports = TasksService;
+const tasksService = new TasksService("./src/db/tasks.json");
+
+module.exports = tasksService;

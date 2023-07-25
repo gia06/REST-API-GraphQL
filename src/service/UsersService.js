@@ -10,7 +10,7 @@ const writeFile = util.promisify(fs.writeFile);
 /**
  * Logic for fetching users information
  */
-class UserService {
+class UsersService {
   /**
    * Constructor
    * @param {*} dataFile Path to a JSOn file that contains the users data
@@ -49,33 +49,6 @@ class UserService {
     return result;
   }
 
-  // /**
-  //  * Updates task status to opposite value
-  //  * @param {*} taskName The name of the task
-  //  */
-  // async updateStatus(taskName) {
-  //   const data = await this.getData();
-
-  //   const task = data.find((item) => item.task === taskName);
-  //   if (task.status === "active") {
-  //     task.status = "done";
-  //   } else {
-  //     task.status = "active";
-  //   }
-
-  //   return writeFile(this.dataFile, JSON.stringify({ tasks: data }));
-  // }
-
-  // /**
-  //  * Find a task by the name
-  //  * @param {*} name The name of the task
-  //  */
-  // async findByName(taskName) {
-  //   const data = await this.getData();
-  //   const result = data.find((item) => item.task === taskName);
-  //   return result;
-  // }
-
   /**
    * Fetches speakers data from the JSON file provided to the constructor
    */
@@ -85,4 +58,6 @@ class UserService {
   }
 }
 
-module.exports = UserService;
+const usersService = new UsersService("./src/db/users.json");
+
+module.exports = usersService;

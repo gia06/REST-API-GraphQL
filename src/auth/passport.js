@@ -2,12 +2,10 @@ const passport = require("passport");
 const passportJwt = require("passport-jwt");
 const ExtractJwt = passportJwt.ExtractJwt;
 const StrategyJwt = passportJwt.Strategy;
-const UsersService = require("../service/UsersService");
+const usersService = require("../service/UsersService");
 const dotenv = require("dotenv");
 
 dotenv.config();
-
-const usersService = new UsersService("./src/db/users.json");
 
 passport.use(
   new StrategyJwt(

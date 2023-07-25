@@ -1,7 +1,5 @@
 const { check, validationResult } = require("express-validator");
-const UsersService = require("../service/UsersService");
-
-const usersService = new UsersService("./src/db/users.json");
+const usersService = require("../service/UsersService");
 
 // * Custom validators
 const registrationValidator = async (email) => {

@@ -1,9 +1,7 @@
 const { check, validationResult } = require("express-validator");
 const { decodeJwt } = require("../auth/jwt");
 
-const TasksService = require("../service/TasksService");
-
-const tasksService = new TasksService("./src/db/tasks.json");
+const tasksService = require("../service/TasksService");
 
 //  * Custom validators
 const taskAddValidator = async (title, server) => {
