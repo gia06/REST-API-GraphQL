@@ -1,0 +1,93 @@
+userSchema: &userSchema
+  type: object
+  properties:
+    email:
+      type: string
+      example: "example@example.com"
+    password:
+      type: string
+      example: "examplePassword"
+    name:
+      type: string
+      example: "John"
+    surname:
+      type: string
+      example: "Doe"
+
+/auth/register:
+  post:
+    summary: registers User
+    description: can be accessed by anyone
+    requestBody:
+      description: create new User
+      content:
+        application/json:
+          schema:
+            <<: *userSchema
+      required: true
+    tags:
+      - auth
+
+    responses:
+      200:
+        description: A user was successfully registered.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+
+              example:
+                message: "A user was successfully registered."
+      400:
+        description: Email field contains an invalid email, or the length of a password is less than 6 characters. Also, when any of the fields are missing.
+      505:
+        description: Something went wrong on the server.
+
+/auth/login:
+  post:
+    summary: authenticates a user
+    description: can be accessed by anyone
+    requestBody:
+      description: authenticate user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "example@example.com"
+              password:
+                type: string
+                example: "examplePassword"
+      required: true
+    tags:
+      - auth
+
+    responses:
+      200:
+        description: A user was successfully logged in. Returns a JWT token and a user object without a password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                token:
+                  type: string
+
+              example:
+                user:
+                  email: example@email.com
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UifQ.0ySne-ShGZUKOfYi6r-4H-SdwmgNGfROzm77BApYUUk
+      400:
+        description: Email field contains an invalid email, or any of the fields is missing, or a user with the provided credentials does not exist.
+      505:
+        description: Something went wrong on the server.

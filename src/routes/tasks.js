@@ -98,6 +98,34 @@ module.exports = (params) => {
     }
   );
 
+  router.put(
+    "/:taskTitle",
+    passport.authenticate("jwt", { session: false }),
+    validateTaskUpdate,
+    validResult,
+    async (req, res, next) => {
+      try {
+        const { title, description } = req.body;
+
+        const { task } = req.res.locals;
+
+        await tasksService.update(
+          task.title,
+          title,
+          description,
+          task.belongsTo
+        );
+
+        res.status(200).json({ message: "A task was successfully updated." });
+      } catch (err) {
+        next(err);
+        return res
+          .status(505)
+          .json({ message: "Something went wrong on the server" });
+      }
+    }
+  );
+
   router.delete(
     "/",
     passport.authenticate("jwt", { session: false }),

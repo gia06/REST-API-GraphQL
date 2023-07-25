@@ -1,0 +1,268 @@
+doneExample: &doneExample
+  id: 64c550acbc503a0f6b0d7b29\
+  title: "exampleTitle"
+  description: "exampleDescription"
+  belongsTo: "de54b99b-81d6-41ab-90ec-d931b67b18b4"
+  isDone: true
+
+toDoExample: &toDoExample
+  id: 64c550acbc503a0f6b0d7b29\
+  title: "exampleTitle"
+  description: "exampleDescription"
+  belongsTo: "de54b99b-81d6-41ab-90ec-d931b67b18b4"
+  isDone: false
+
+taskSchema: &taskSChema
+  type: object
+  properties:
+    id:
+      type: string
+      example: '64c550acbc503a0f6b0d7b29\'
+    title:
+      type: string
+      example: "exampleTitle"
+    description:
+      type: string
+      example: "exampleDescription"
+    belongsTo:
+      type: string
+      example: "de54b99b-81d6-41ab-90ec-d931b67b18b4"
+    isDone:
+      type: boolean
+      example: true
+
+/tasks:
+  get:
+    security:
+      - bearerAuth: []
+    summary: get list of TODO tasks
+    description: can be accessed only by authenticated users
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+        required: true
+    tags:
+      - tasks
+
+    responses:
+      200:
+        description: Tasks were successfully returned. An empty array is returned if there are no tasks.
+        content:
+          application/json:
+            schema:
+              <<: *taskSChema
+
+              example:
+                tasks:
+                  - <<: *toDoExample
+                  - <<: *toDoExample
+      400:
+        description: Schema validation of the body failed, or a user already has a task with the provided title
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      505:
+        description: Something went wrong on the server.
+
+  post:
+    security:
+      - bearerAuth: []
+    summary: add new tasks
+    description: can be accessed only by authenticated users
+    requestBody:
+      description: content of the task
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "exampleTitle"
+              description:
+                type: string
+                example: "exampleDescription"
+      required: true
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+    tags:
+      - tasks
+
+    responses:
+      201:
+        description: A TODO task was successfully created for a user.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Task was successfully created!"
+      400:
+        description: Schema validation of the body failed, or a user already has a task with the provided title.
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      505:
+        description: Something went wrong on the server.
+
+  delete:
+    security:
+      - bearerAuth: []
+    summary: delete task from the list
+    description: can be accessed only by authenticated users
+    requestBody:
+      description: content of the task
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "exampleTitle"
+      required: true
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+    tags:
+      - tasks
+
+    responses:
+      204:
+        description: A task was successfully deleted. Also, if a task with the provided title does not exist.
+      400:
+        description: Schema validation failed.
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      505:
+        description: Something went wrong on the server.
+
+/tasks/done:
+  get:
+    security:
+      - bearerAuth: []
+    summary: get list of done tasks
+    description: can be accessed only by authenticated users
+    requestBody:
+      description: content of the task
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "exampleTitle"
+      required: true
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+    tags:
+      - tasks
+
+    responses:
+      200:
+        description: The completed tasks were successfully returned. An empty array is returned if there are no tasks.
+        content:
+          application/json:
+            schema:
+              <<: *taskSChema
+
+            example:
+              - <<: *doneExample
+              - <<: *doneExample
+
+      400:
+        description: Schema validation of the body failed. not exist.
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      404:
+        description: A task with the provided title does not exist in the user's to-do list.
+      505:
+        description: Something went wrong on the server.
+
+  post:
+    security:
+      - bearerAuth: []
+    summary: mark stored task as done
+    description: can be accessed only by authenticated users
+    requestBody:
+      description: content of the task
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "exampleTitle"
+      required: true
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+    tags:
+      - tasks
+
+    responses:
+      200:
+        description: A user task was successfully marked as "done
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "task was successfully marked as done!"
+      400:
+        description: Schema validation of the body failed. not exist.
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      404:
+        description: A task with the provided title does not exist in the user's to-do list.
+      505:
+        description: Something went wrong on the server.
+
+/tasks/{taskTitle}:
+  put:
+    security:
+      - bearerAuth: []
+    summary: updates content of the task
+    description: can be accessed only by authenticated users
+    requestBody:
+      description: content of the task
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "exampleTitle"
+      required: true
+    parameters:
+      - name: "Authorization"
+        in: "headers"
+    tags:
+      - tasks
+
+    responses:
+      200:
+        description: A task was successfully updated.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "A task was successfully updated."
+      400:
+        description: Schema validation failed, or a user tries to set a new title that already exists in the user's list of tasks.
+      401:
+        description: Authorization validation failed. For instance, a request without a token.
+      404:
+        description: A task with such taskTitle is not found in the user's tasks.
+      505:
+        description: Something went wrong on the server.

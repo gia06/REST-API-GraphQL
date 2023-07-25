@@ -24,8 +24,8 @@ const loginValidator = async (email, server) => {
 const validateRegistration = [
   check("email")
     .trim()
-    .isLength({ min: 8 })
-    .withMessage("emails length should be at least 8 letters!"),
+    .isLength({ min: 6 })
+    .withMessage("emails length should be at least 6 letters!"),
   check("email")
     .isEmail()
     .withMessage("property email must be a valid email address!"),

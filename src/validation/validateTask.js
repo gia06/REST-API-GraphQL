@@ -13,12 +13,32 @@ const taskAddValidator = async (title, server) => {
   if (task) throw new Error(`Tasks with provided title already exists`);
 };
 
+const taskDoneValidator = async (title, server) => {
+  const { authorization } = server.req.headers;
+  const { id } = await decodeJwt(authorization);
+  const task = await tasksService.findByTitle(title, id);
+
+  if (!task) throw new Error(`Task with provided title doesn\'t exist!`);
+  else if (task.isDone) throw new Error(`Task is already marked as done!`);
+
+  server.req.res.locals = { task };
+};
+
 const taskUpdateValidator = async (title, server) => {
   const { authorization } = server.req.headers;
   const { id } = await decodeJwt(authorization);
   const task = await tasksService.findByTitle(title, id);
 
-  if (!task) throw new Error(`Task with provided title doesn\'t exist`);
+  if (!task) throw new Error(`Task with provided title doesn\'t exist!`);
+  server.req.res.locals = { task };
+};
+
+const taskDeleteValidator = async (title, server) => {
+  const { authorization } = server.req.headers;
+  const { id } = await decodeJwt(authorization);
+  const task = await tasksService.findByTitle(title, id);
+
+  if (!task) throw new Error(`Task is already deleted!`);
   server.req.res.locals = { task };
 };
 
@@ -37,7 +57,7 @@ const validateTaskAdd = [
 
 const validateTaskDone = [
   check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
-  check("title").custom(taskUpdateValidator),
+  check("title").custom(taskDoneValidator),
 ];
 
 const validateTaskUpdate = [
@@ -52,7 +72,7 @@ const validateTaskUpdate = [
 
 const validateTaskDelete = [
   check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
-  check("title").custom(taskUpdateValidator),
+  check("title").custom(taskDeleteValidator),
 ];
 
 // * Validation chain
@@ -63,8 +83,12 @@ const validResult = (req, res, next) => {
     return next();
   }
 
-  if (result.array()[0].msg === `Task with provided title doesn\'t exist`)
+  if (result.array()[0].msg === `Task with provided title doesn\'t exist!`)
     return res.status(404).json({ message: result.array()[0].msg });
+
+  if (result.array()[0].msg === `Task is already deleted!`) {
+    return res.sendStatus(204);
+  }
 
   return res.status(400).json({ errors: result.array() });
 };

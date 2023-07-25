@@ -1,7 +1,8 @@
 const express = require("express");
 
-const loginRoute = require("./tasks");
-const registerRoute = require("./users");
+const tasksRoutes = require("./tasks");
+const authRoutes = require("./auth");
+const swaggerRoute = require("./swagger");
 
 const UserService = require("../service/UsersService");
 const TasksService = require("../service/TasksService");
@@ -14,7 +15,8 @@ const tasksService = new TasksService("./src/db/tasks.json");
 
 const router = express.Router();
 
-router.use("/auth", registerRoute({ usersService, User }));
-router.use("/tasks", loginRoute({ tasksService, Task }));
+router.use("/auth", authRoutes({ usersService, User }));
+router.use("/tasks", tasksRoutes({ tasksService, Task }));
+router.use("/", swaggerRoute());
 
 module.exports = router;
