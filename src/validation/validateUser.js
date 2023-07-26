@@ -1,5 +1,5 @@
-const { check, validationResult } = require("express-validator");
-const usersService = require("../service/UsersService");
+import { check, validationResult } from "express-validator";
+import usersService from "../service/UsersService.js";
 
 // * Custom validators
 const registrationValidator = async (email) => {
@@ -19,7 +19,7 @@ const loginValidator = async (email, server) => {
 };
 
 // * Validation chains
-const validateRegistration = [
+export const validateRegistration = [
   check("email")
     .trim()
     .isLength({ min: 6 })
@@ -42,14 +42,14 @@ const validateRegistration = [
     .withMessage("property surname is required!"),
 ];
 
-const validateLogin = [
+export const validateLogin = [
   check("email").trim().isLength({ min: 1 }).withMessage("email is required!"),
   check("password").trim().isLength({ min: 1 }),
   check("email").custom(loginValidator),
 ];
 
 //  * Validation results
-const registerValidationResult = (req, res, next) => {
+export const registerValidationResult = (req, res, next) => {
   const result = validationResult(req);
 
   if (result.isEmpty()) {
@@ -59,7 +59,7 @@ const registerValidationResult = (req, res, next) => {
   return res.status(400).json({ errors: result.array() });
 };
 
-const loginValidationResult = (req, res, next) => {
+export const loginValidationResult = (req, res, next) => {
   const result = validationResult(req);
 
   if (result.isEmpty()) {
@@ -67,11 +67,4 @@ const loginValidationResult = (req, res, next) => {
   }
 
   return res.status(400).json({ message: "Incorrect email or password" });
-};
-
-module.exports = {
-  validateRegistration,
-  validateLogin,
-  registerValidationResult,
-  loginValidationResult,
 };

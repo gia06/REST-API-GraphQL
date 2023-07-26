@@ -1,16 +1,16 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   validateRegistration,
   validateLogin,
   registerValidationResult,
   loginValidationResult,
-} = require("../validation/validateUser");
-const { signJwt } = require("../auth/jwt");
-const comparePassword = require("../auth/comparePassword");
+} from "../validation/validateUser.js";
+import { signJwt } from "../auth/jwt.js";
+import comparePassword from "../auth/comparePassword.js";
 
 const router = express.Router();
 
-module.exports = (params) => {
+export default (params) => {
   const { usersService, User } = params;
 
   router.post(

@@ -1,7 +1,7 @@
-const { check, validationResult } = require("express-validator");
-const { decodeJwt } = require("../auth/jwt");
+import { check, validationResult } from "express-validator";
+import { decodeJwt } from "../auth/jwt.js";
 
-const tasksService = require("../service/TasksService");
+import tasksService from "../service/TasksService.js";
 
 //  * Custom validators
 const taskAddValidator = async (title, server) => {
@@ -41,7 +41,7 @@ const taskDeleteValidator = async (title, server) => {
 };
 
 // * Validation chains
-const validateTaskAdd = [
+export const validateTaskAdd = [
   check("title")
     .trim()
     .isLength({ min: 4 })
@@ -53,12 +53,12 @@ const validateTaskAdd = [
     .withMessage("description length should be at least 6 letters!"),
 ];
 
-const validateTaskDone = [
+export const validateTaskDone = [
   check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
   check("title").custom(taskDoneValidator),
 ];
 
-const validateTaskUpdate = [
+export const validateTaskUpdate = [
   check("taskTitle").custom(taskUpdateValidator),
   check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
   check("title").custom(taskAddValidator),
@@ -68,13 +68,13 @@ const validateTaskUpdate = [
     .withMessage("description is required!"),
 ];
 
-const validateTaskDelete = [
+export const validateTaskDelete = [
   check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
   check("title").custom(taskDeleteValidator),
 ];
 
 // * Validation chain
-const validResult = (req, res, next) => {
+export const validResult = (req, res, next) => {
   const result = validationResult(req);
 
   if (result.isEmpty()) {
@@ -89,12 +89,4 @@ const validResult = (req, res, next) => {
   }
 
   return res.status(400).json({ errors: result.array() });
-};
-
-module.exports = {
-  validateTaskAdd,
-  validateTaskDone,
-  validateTaskUpdate,
-  validateTaskDelete,
-  validResult,
 };

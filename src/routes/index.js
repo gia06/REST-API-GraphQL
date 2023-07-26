@@ -1,15 +1,15 @@
-const express = require("express");
-const passport = require("passport");
+import express from "express";
+import passport from "passport";
 
-const tasksRoutes = require("./tasks");
-const authRoutes = require("./auth");
-const swaggerRoute = require("./swagger");
+import tasksRoutes from "./tasks.js";
+import authRoutes from "./auth.js";
+import swaggerRoute from "./swagger.js";
 
-const usersService = require("../service/UsersService");
-const tasksService = require("../service/TasksService");
+import usersService from "../service/UsersService.js";
+import tasksService from "../service/TasksService.js";
 
-const User = require("../schema/User");
-const Task = require("../schema/Task");
+import User from "../schema/User.js";
+import Task from "../schema/Task.js";
 
 const router = express.Router();
 
@@ -21,4 +21,4 @@ router.use(
 );
 router.use("/", swaggerRoute());
 
-module.exports = router;
+export default router;

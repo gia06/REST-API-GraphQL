@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-const signJwt = (payload) => {
+export const signJwt = (payload) => {
   return new Promise((resolve, reject) => {
     jwt.sign(
       payload,
@@ -16,7 +16,7 @@ const signJwt = (payload) => {
   });
 };
 
-const decodeJwt = (authHeader) => {
+export const decodeJwt = (authHeader) => {
   const token = authHeader.split(" ")[1];
   return new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
@@ -25,5 +25,3 @@ const decodeJwt = (authHeader) => {
     });
   });
 };
-
-module.exports = { signJwt, decodeJwt };

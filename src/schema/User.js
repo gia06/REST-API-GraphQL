@@ -1,5 +1,5 @@
-const { v4 } = require("uuid");
-const bcrypt = require("bcrypt");
+import { v4 } from "uuid";
+import bcrypt from "bcrypt";
 
 class User {
   constructor(name, surname, email, password) {
@@ -36,4 +36,4 @@ class User {
   }
 }
 
-module.exports = User;
+export default User;

@@ -1,11 +1,11 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-require("./auth/passport");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import "./auth/passport.js";
 
-const routes = require("./routes/index");
+import routes from "./routes/index.js";
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 
@@ -13,5 +13,3 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/api", routes);
-
-module.exports = app;

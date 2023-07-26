@@ -1,5 +1,5 @@
-const fs = require("fs");
-const util = require("util");
+import fs from "fs";
+import util from "util";
 
 /**
  * We want to use async/await with fs.readFile - util.promisfy gives us that
@@ -131,4 +131,4 @@ class TasksService {
 
 const tasksService = new TasksService("./src/db/tasks.json");
 
-module.exports = tasksService;
+export default tasksService;

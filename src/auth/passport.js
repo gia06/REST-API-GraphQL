@@ -1,9 +1,9 @@
-const passport = require("passport");
-const passportJwt = require("passport-jwt");
+import passport from "passport";
+import passportJwt from "passport-jwt";
 const ExtractJwt = passportJwt.ExtractJwt;
 const StrategyJwt = passportJwt.Strategy;
-const usersService = require("../service/UsersService");
-const dotenv = require("dotenv");
+import usersService from "../service/UsersService.js";
+import dotenv from "dotenv";
 
 dotenv.config();
 

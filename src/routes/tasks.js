@@ -1,16 +1,16 @@
-const express = require("express");
-const { decodeJwt } = require("../auth/jwt");
-const {
+import express from "express";
+import { decodeJwt } from "../auth/jwt.js";
+import {
   validateTaskAdd,
   validateTaskDone,
   validateTaskUpdate,
   validateTaskDelete,
   validResult,
-} = require("../validation/validateTask");
+} from "../validation/validateTask.js";
 
 const router = express.Router();
 
-module.exports = (params) => {
+export default (params) => {
   const { tasksService, Task } = params;
 
   router.get("/", async (req, res, next) => {
