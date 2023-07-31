@@ -8,16 +8,15 @@ import swaggerRoute from "./swagger.js";
 import usersService from "../service/UsersService.js";
 import tasksService from "../service/TasksService.js";
 
-import User from "../schema/User.js";
-import Task from "../schema/Task.js";
+import { TaskModel } from "../models/Task.js";
 
 const router = express.Router();
 
-router.use("/auth", authRoutes({ usersService, User }));
+router.use("/auth", authRoutes({ usersService }));
 router.use(
   "/tasks",
   passport.authenticate("jwt", { session: false }),
-  tasksRoutes({ tasksService, Task })
+  tasksRoutes({ tasksService, TaskModel })
 );
 router.use("/", swaggerRoute());
 

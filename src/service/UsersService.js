@@ -1,32 +1,16 @@
-import fs from "fs";
-import util from "util";
-
-/**
- * We want to use async/await with fs.readFile - util.promisfy gives us that
- */
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
+import { UserModel } from "../models/User.js";
 
 /**
  * Logic for fetching users information
  */
 class UsersService {
   /**
-   * Constructor
-   * @param {*} dataFile Path to a JSOn file that contains the users data
-   */
-  constructor(dataFile) {
-    this.dataFile = dataFile;
-  }
-
-  /**
    * Add a new task item
    * @param {*} user The User object to add
    */
-  async save(user) {
-    const { users } = await this.getData();
-    users.push(user);
-    return writeFile(this.dataFile, JSON.stringify({ users }));
+  async create(user) {
+    const newUser = new UserModel(user);
+    await newUser.save();
   }
 
   /**
@@ -34,9 +18,8 @@ class UsersService {
    * @param {*} id The id of the user
    */
   async findById(id) {
-    const { users } = await this.getData();
-    const result = users.find((user) => user.id === id);
-    return result;
+    const user = await UserModel.findOne({ _id: id });
+    return user;
   }
 
   /**
@@ -44,17 +27,12 @@ class UsersService {
    * @param {*} email The email of the user
    */
   async findByEmail(email) {
-    const { users } = await this.getData();
-    const result = users.find((user) => user.email === email);
-    return result;
+    const user = await UserModel.findOne({ email });
+    return user;
   }
 
-  /**
-   * Fetches speakers data from the JSON file provided to the constructor
-   */
-  async getData() {
-    const data = await readFile(this.dataFile, "utf8");
-    return JSON.parse(data);
+  async comparePassword(password) {
+    return UserModel.comparePassword(password);
   }
 }
 

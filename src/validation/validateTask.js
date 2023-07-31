@@ -2,13 +2,17 @@ import { check, validationResult } from "express-validator";
 import { decodeJwt } from "../auth/jwt.js";
 
 import tasksService from "../service/TasksService.js";
+import { logger } from "../logger/logger.js";
 
 //  * Custom validators
 const taskAddValidator = async (title, server) => {
   const { authorization } = server.req.headers;
   const { id } = await decodeJwt(authorization);
   const task = await tasksService.findByTitle(title, id);
-  if (task) throw new Error(`Tasks with provided title already exists`);
+  if (task) {
+    logger.error(`Tasks with provided title already exists`);
+    throw new Error(`Tasks with provided title already exists`);
+  }
 };
 
 const taskDoneValidator = async (title, server) => {
@@ -16,8 +20,10 @@ const taskDoneValidator = async (title, server) => {
   const { id } = await decodeJwt(authorization);
   const task = await tasksService.findByTitle(title, id);
 
-  if (!task) throw new Error(`Task with provided title doesn\'t exist!`);
-  else if (task.isDone) throw new Error(`Task is already marked as done!`);
+  if (!task) {
+    logger.error(`Task with provided title doesn\'t exist!`);
+    throw new Error(`Task with provided title doesn\'t exist!`);
+  } else if (task.isDone) throw new Error(`Task is already marked as done!`);
 
   server.req.res.locals = { task };
 };
@@ -27,7 +33,10 @@ const taskUpdateValidator = async (title, server) => {
   const { id } = await decodeJwt(authorization);
   const task = await tasksService.findByTitle(title, id);
 
-  if (!task) throw new Error(`Task with provided title doesn\'t exist!`);
+  if (!task) {
+    logger.error(`Task with provided title doesn\'t exist!`);
+    throw new Error(`Task with provided title doesn\'t exist!`);
+  }
   server.req.res.locals = { task };
 };
 
@@ -36,7 +45,10 @@ const taskDeleteValidator = async (title, server) => {
   const { id } = await decodeJwt(authorization);
   const task = await tasksService.findByTitle(title, id);
 
-  if (!task) throw new Error(`Task is already deleted!`);
+  if (!task) {
+    logger.error(`Task is already deleted!`);
+    throw new Error(`Task is already deleted!`);
+  }
   server.req.res.locals = { task };
 };
 
@@ -73,7 +85,7 @@ export const validateTaskDelete = [
   check("title").custom(taskDeleteValidator),
 ];
 
-// * Validation chain
+// * Validation result
 export const validResult = (req, res, next) => {
   const result = validationResult(req);
 
@@ -81,12 +93,16 @@ export const validResult = (req, res, next) => {
     return next();
   }
 
-  if (result.array()[0].msg === `Task with provided title doesn\'t exist!`)
+  if (result.array()[0].msg === `Task with provided title doesn\'t exist!`) {
+    logger.error(`Task with provided title doesn\'t exist!`);
     return res.status(404).json({ message: result.array()[0].msg });
+  }
 
   if (result.array()[0].msg === `Task is already deleted!`) {
+    logger.error(`Task is already deleted!`);
     return res.sendStatus(204);
   }
 
+  logger.error(result.array());
   return res.status(400).json({ errors: result.array() });
 };

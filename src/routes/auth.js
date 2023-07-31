@@ -6,12 +6,11 @@ import {
   loginValidationResult,
 } from "../validation/validateUser.js";
 import { signJwt } from "../auth/jwt.js";
-import comparePassword from "../auth/comparePassword.js";
-
+import { logger } from "../logger/logger.js";
 const router = express.Router();
 
 export default (params) => {
-  const { usersService, User } = params;
+  const { usersService } = params;
 
   router.post(
     "/register",
@@ -21,15 +20,13 @@ export default (params) => {
       try {
         const { name, surname, email, password } = req.body;
 
-        const user = await new User(name, surname, email, password);
-
-        await usersService.save(user);
+        await usersService.create({ name, surname, email, password });
 
         return res
           .status(200)
           .json({ message: "A user was successfully registered." });
       } catch (err) {
-        next(err);
+        logger.error(err);
         return res
           .status(505)
           .json({ message: "Something went wrong on the server!" });
@@ -47,18 +44,20 @@ export default (params) => {
 
         const { user } = req.res.locals;
 
-        const result = await comparePassword(password, user.password);
+        const result = await user.comparePassword(password);
 
-        if (!result)
+        if (!result) {
+          logger.error("Incorrect email or password");
           return res
             .status(400)
             .json({ message: "Incorrect email or password" });
+        }
 
         const token = await signJwt({ id: user.id });
 
         return res.status(200).json({ user: { email }, token });
       } catch (err) {
-        next(err);
+        logger.error("error is:", err);
         return res
           .status(505)
           .json({ message: "Something went wrong on the server" });

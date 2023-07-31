@@ -1,32 +1,16 @@
-import fs from "fs";
-import util from "util";
-
-/**
- * We want to use async/await with fs.readFile - util.promisfy gives us that
- */
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
+import { TaskModel } from "../models/Task.js";
 
 /**
  * Logic for fetching tasks information
  */
 class TasksService {
   /**
-   * Constructor
-   * @param {*} dataFile Path to a JSOn file that contains the tasks data
-   */
-  constructor(dataFile) {
-    this.dataFile = dataFile;
-  }
-
-  /**
    * Add a new task item
    * @param {*} task The task object to add
    */
-  async save(task) {
-    const { tasks } = await this.getData();
-    tasks.push(task);
-    return writeFile(this.dataFile, JSON.stringify({ tasks }));
+  async save({ title, description, id }) {
+    const newTask = new TaskModel({ title, description, belongsTo: id });
+    await newTask.save();
   }
 
   /**
@@ -34,11 +18,9 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findAll(userId) {
-    const { tasks } = await this.getData();
-    const result = tasks.filter(
-      (task) => task.belongsTo === userId && task.isDone === false
-    );
-    return result;
+    const tasks = await TaskModel.find({ belongsTo: userId, isDone: false });
+    // console.log(tasks);
+    return tasks;
   }
 
   /**
@@ -46,13 +28,9 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findDone(userId) {
-    const { tasks } = await this.getData();
+    const tasks = await TaskModel.find({ belongsTo: userId, isDone: true });
 
-    const result = tasks.filter(
-      (task) => task.belongsTo === userId && task.isDone === true
-    );
-
-    return result;
+    return tasks;
   }
 
   /**
@@ -61,11 +39,9 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findByTitle(title, userId) {
-    const { tasks } = await this.getData();
-    const result = tasks.find(
-      (task) => task.title === title && task.belongsTo === userId
-    );
-    return result;
+    const user = await TaskModel.findOne({ belongsTo: userId, title });
+
+    return user;
   }
 
   /**
@@ -74,15 +50,10 @@ class TasksService {
    * @param {*} userID The id of the user
    */
   async markDone(title, userId) {
-    const { tasks } = await this.getData();
-
-    const task = tasks.find(
-      (task) => task.title === title && task.belongsTo === userId
-    );
+    const task = await TaskModel.findOne({ title, belongsTo: userId });
 
     task.isDone = true;
-
-    return writeFile(this.dataFile, JSON.stringify({ tasks }));
+    await task.save();
   }
 
   /**
@@ -91,16 +62,15 @@ class TasksService {
    * @param {*} userID The id of the user
    */
   async update(oldTitle, newTitle, description, userId) {
-    const { tasks } = await this.getData();
-
-    const task = tasks.find(
-      (task) => task.title === oldTitle && task.belongsTo === userId
-    );
+    const task = await TaskModel.findOne({
+      title: oldTitle,
+      belongsTo: userId,
+    });
 
     task.title = newTitle;
     task.description = description;
 
-    return writeFile(this.dataFile, JSON.stringify({ tasks }));
+    await task.save();
   }
 
   /**
@@ -108,24 +78,12 @@ class TasksService {
    * @param {*} title The title object
    * @param {*} userID The id of the user
    */
-  async delete(title, userId) {
-    const { tasks } = await this.getData();
-
-    const taskIndex = tasks.findIndex(
-      (task) => task.title === title && task.belongsTo === userId
-    );
-
-    tasks.splice(taskIndex, 1);
-
-    await writeFile(this.dataFile, JSON.stringify({ tasks }));
-  }
-
-  /**
-   * Fetches speakers data from the JSON file provided to the constructor
-   */
-  async getData() {
-    const data = await readFile(this.dataFile, "utf8");
-    return JSON.parse(data);
+  async delete(taskId, userId) {
+    const task = await TaskModel.findOneAndDelete({
+      _id: taskId,
+      belongsTo: userId,
+    });
+    console.log(task);
   }
 }
 

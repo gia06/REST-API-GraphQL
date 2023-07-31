@@ -1,7 +1,13 @@
-import { app } from "./src/app.js";
+import { connectToMongoose } from "./src/db/connection.js";
+import startServer from "./src/main.js";
+import { logger } from "./src/logger/logger.js";
 
-const port = 3000;
+connectToMongoose()
+  .then(() => {
+    logger.info("Connected to MongoDB");
+  })
+  .catch((err) => {
+    logger.error(err);
+  });
 
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
-});
+startServer();

@@ -1,11 +1,13 @@
 import { check, validationResult } from "express-validator";
 import usersService from "../service/UsersService.js";
+import { logger } from "../logger/logger.js";
 
 // * Custom validators
 const registrationValidator = async (email) => {
   const user = await usersService.findByEmail(email);
 
   if (user) {
+    logger.error("User with provided email already exists");
     throw new Error(`User with provided email already exists`);
   }
 };
@@ -13,7 +15,10 @@ const registrationValidator = async (email) => {
 const loginValidator = async (email, server) => {
   const user = await usersService.findByEmail(email);
 
-  if (!user) throw new Error("Incorrect email or password");
+  if (!user) {
+    logger.error("Incorrect email or password");
+    throw new Error("Incorrect email or password");
+  }
 
   server.req.res.locals = { user };
 };
@@ -56,6 +61,7 @@ export const registerValidationResult = (req, res, next) => {
     return next();
   }
 
+  logger.error(result.array());
   return res.status(400).json({ errors: result.array() });
 };
 
@@ -66,5 +72,6 @@ export const loginValidationResult = (req, res, next) => {
     return next();
   }
 
+  logger.error("Incorrect email or password");
   return res.status(400).json({ message: "Incorrect email or password" });
 };

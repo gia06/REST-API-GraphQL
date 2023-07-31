@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 export default (params) => {
-  const { tasksService, Task } = params;
+  const { tasksService } = params;
 
   router.get("/", async (req, res, next) => {
     try {
@@ -47,9 +47,7 @@ export default (params) => {
       const { title, description } = req.body;
       const { id } = await decodeJwt(req.headers.authorization);
 
-      const task = new Task(title, description, id);
-
-      await tasksService.save(task);
+      await tasksService.save({ title, description, id });
 
       res.status(201).json({ message: "Task was successfully created!" });
     } catch (err) {
