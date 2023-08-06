@@ -22,9 +22,7 @@ export default (params) => {
 
         await usersService.create({ name, surname, email, password });
 
-        return res
-          .status(200)
-          .json({ message: "A user was successfully registered." });
+        return res.status(200).send("");
       } catch (err) {
         logger.error(err);
         return res

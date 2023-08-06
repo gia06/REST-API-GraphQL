@@ -66,23 +66,35 @@ export const validateTaskAdd = [
 ];
 
 export const validateTaskDone = [
-  check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
+  check("title")
+    .isString()
+    .withMessage("title should be a String!")
+    .isLength({ min: 1 })
+    .withMessage("title is required!"),
   check("title").custom(taskDoneValidator),
 ];
 
 export const validateTaskUpdate = [
-  check("taskTitle").custom(taskUpdateValidator),
-  check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
+  check("taskTitle")
+    .isString()
+    .withMessage("taskTitle should be a string!")
+    .custom(taskUpdateValidator),
+  check("title").isLength({ min: 1 }).withMessage("title is required!"),
   check("title").custom(taskAddValidator),
   check("description")
-    .trim()
+    .isString()
+    .withMessage("description should be a string!")
     .isLength({ min: 1 })
     .withMessage("description is required!"),
 ];
 
 export const validateTaskDelete = [
-  check("title").trim().isLength({ min: 1 }).withMessage("title is required!"),
-  check("title").custom(taskDeleteValidator),
+  check("title")
+    .isString()
+    .withMessage("title should be a string!")
+    .isLength({ min: 1 })
+    .withMessage("title is required!")
+    .custom(taskDeleteValidator),
 ];
 
 // * Validation result

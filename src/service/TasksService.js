@@ -18,8 +18,10 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findAll(userId) {
-    const tasks = await TaskModel.find({ belongsTo: userId, isDone: false });
-    // console.log(tasks);
+    const tasks = await TaskModel.find(
+      { belongsTo: userId, done: false },
+      { _id: 0, __v: 0, belongsTo: 0 }
+    );
     return tasks;
   }
 
@@ -28,7 +30,10 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findDone(userId) {
-    const tasks = await TaskModel.find({ belongsTo: userId, isDone: true });
+    const tasks = await TaskModel.find(
+      { belongsTo: userId, done: true },
+      { _id: 0, __v: 0, belongsTo: 0 }
+    );
 
     return tasks;
   }
@@ -52,7 +57,7 @@ class TasksService {
   async markDone(title, userId) {
     const task = await TaskModel.findOne({ title, belongsTo: userId });
 
-    task.isDone = true;
+    task.done = true;
     await task.save();
   }
 
@@ -74,7 +79,7 @@ class TasksService {
   }
 
   /**
-   * Updates task isDone to true value
+   * deletes a task
    * @param {*} title The title object
    * @param {*} userID The id of the user
    */

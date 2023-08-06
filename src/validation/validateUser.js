@@ -37,14 +37,14 @@ export const validateRegistration = [
     .trim()
     .isLength({ min: 8 })
     .withMessage("password length should be at least 8 letters!"),
-  check("name")
-    .trim()
-    .isLength({ min: 1 })
-    .withMessage("property name is required!"),
-  check("surname")
-    .trim()
-    .isLength({ min: 1 })
-    .withMessage("property surname is required!"),
+  // check("name")
+  //   .trim()
+  //   .isLength({ min: 1 })
+  //   .withMessage("property name is required!"),
+  // check("surname")
+  //   .trim()
+  //   .isLength({ min: 1 })
+  //   .withMessage("property surname is required!"),
 ];
 
 export const validateLogin = [

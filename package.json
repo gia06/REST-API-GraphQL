@@ -6,13 +6,17 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -L --ext js,yaml index.js",
-    "start": "nodemon --ignore **/*.json ./src/index.js"
+    "start": "nodemon --ignore **/*.json ./src/index.js",
+    "test:junit": "cross-env MOCHA_FILE=junit.xml mocha test --reporter mocha-junit-reporter",
+    "test:xunit": "cross-env MOCHA_FILE=xunit.xml mocha test --reporter mocha-xunit-reporter",
+    "test": "npm run test:junit",
+    "test:unit": "mocha test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.0",
+    "bcrypt": "5.1.0",
     "body-parser": "1.20.2",
     "cors": "2.8.5",
     "express": "4.18.2",
@@ -21,14 +25,24 @@
     "mongoose": "7.4.1",
     "passport": "0.6.0",
     "passport-jwt": "4.0.1",
+    "cookie-session": "1.4.0",
+    "passport-local": "1.0.0",
     "stoppable": "1.1.0"
   },
   "devDependencies": {
     "dotenv": "16.3.1",
     "nodemon": "3.0.1",
-    "pino": "^8.14.2",
-    "pino-pretty": "^10.2.0",
+    "pino": "8.14.2",
+    "pino-pretty": "10.2.0",
     "swagger-ui-express": "5.0.0",
-    "yamljs": "0.3.0"
+    "yamljs": "0.3.0",
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "cross-env": "7.0.2",
+    "mocha": "8.3.2",
+    "mocha-junit-reporter": "1.23.3",
+    "mocha-xunit-reporter": "2.1.0",
+    "sinon": "9.2.4",
+    "superagent": "6.1.0"
   }
 }
