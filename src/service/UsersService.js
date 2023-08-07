@@ -1,4 +1,4 @@
-import { UserModel } from "../models/User.js";
+import { usersRepository } from "../repository/UsersRepository.js";
 
 /**
  * Logic for fetching users information
@@ -9,8 +9,7 @@ class UsersService {
    * @param {*} user The User object to add
    */
   async create(user) {
-    const newUser = new UserModel(user);
-    await newUser.save();
+    await usersRepository.create(user);
   }
 
   /**
@@ -18,8 +17,7 @@ class UsersService {
    * @param {*} id The id of the user
    */
   async findById(id) {
-    const user = await UserModel.findOne({ _id: id });
-    return user;
+    return await usersRepository.findById(id);
   }
 
   /**
@@ -27,15 +25,14 @@ class UsersService {
    * @param {*} email The email of the user
    */
   async findByEmail(email) {
-    const user = await UserModel.findOne({ email });
-    return user;
+    return await usersRepository.findByEmail(email);
   }
 
   async comparePassword(password) {
-    return UserModel.comparePassword(password);
+    return await usersRepository.comparePassword(password);
   }
 }
 
-const usersService = new UsersService("./src/db/users.json");
+const usersService = new UsersService();
 
 export default usersService;

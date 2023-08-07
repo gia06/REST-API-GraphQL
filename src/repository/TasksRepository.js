@@ -1,15 +1,13 @@
-import { tasksRepository } from "../repository/tasksRepository.js";
+import { TaskModel } from "../models/Task.js";
 
-/**
- * Logic for fetching tasks information
- */
-class TasksService {
+class TasksRepository {
   /**
    * Add a new task item
    * @param {*} task The task object to add
    */
   async save({ title, description, id }) {
-    await tasksRepository.save({ title, description, id });
+    const newTask = new TaskModel({ title, description, belongsTo: id });
+    await newTask.save();
   }
 
   /**
@@ -17,7 +15,11 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findAll(userId) {
-    return await tasksRepository.findAll(userId);
+    const tasks = await TaskModel.find(
+      { belongsTo: userId, done: false },
+      { _id: 0, __v: 0, belongsTo: 0 }
+    );
+    return tasks;
   }
 
   /**
@@ -25,7 +27,12 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findDone(userId) {
-    return await tasksRepository.findDone(userId);
+    const tasks = await TaskModel.find(
+      { belongsTo: userId, done: true },
+      { _id: 0, __v: 0, belongsTo: 0 }
+    );
+
+    return tasks;
   }
 
   /**
@@ -34,7 +41,9 @@ class TasksService {
    * @param {*} userId The id of the user
    */
   async findByTitle(title, userId) {
-    return await tasksRepository.findByTitle(title, userId);
+    const user = await TaskModel.findOne({ belongsTo: userId, title });
+
+    return user;
   }
 
   /**
@@ -43,7 +52,10 @@ class TasksService {
    * @param {*} userID The id of the user
    */
   async markDone(title, userId) {
-    await tasksRepository.markDone(title, userId);
+    const task = await TaskModel.findOne({ title, belongsTo: userId });
+
+    task.done = true;
+    await task.save();
   }
 
   /**
@@ -52,7 +64,15 @@ class TasksService {
    * @param {*} userID The id of the user
    */
   async update(oldTitle, newTitle, description, userId) {
-    await tasksRepository.update(oldTitle, newTitle, description, userId);
+    const task = await TaskModel.findOne({
+      title: oldTitle,
+      belongsTo: userId,
+    });
+
+    task.title = newTitle;
+    task.description = description;
+
+    await task.save();
   }
 
   /**
@@ -61,10 +81,11 @@ class TasksService {
    * @param {*} userID The id of the user
    */
   async delete(taskId, userId) {
-    await tasksRepository.delete(taskId, userId);
+    await TaskModel.findOneAndDelete({
+      _id: taskId,
+      belongsTo: userId,
+    });
   }
 }
 
-const tasksService = new TasksService();
-
-export default tasksService;
+export const tasksRepository = new TasksRepository();
