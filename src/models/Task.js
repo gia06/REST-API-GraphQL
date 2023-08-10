@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../db/connection.js";
 
 const TaskSchema = mongoose.Schema(
   {
@@ -10,4 +12,15 @@ const TaskSchema = mongoose.Schema(
   { timeStamps: true }
 );
 
-export const TaskModel = mongoose.model("Task", TaskSchema);
+export const Task = sequelize.define("Task", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+    allowNull: false,
+    unique: true,
+  },
+  title: DataTypes.STRING,
+  description: DataTypes.STRING,
+  done: { type: DataTypes.BOOLEAN, defaultValue: false },
+});

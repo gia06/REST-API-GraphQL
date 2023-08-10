@@ -1,12 +1,18 @@
-import { UserModel } from "../models/User.js";
+import { User } from "../models/User.js";
+import { generateHash, comparePassword } from "../hash/index.js";
 
 class UsersRepository {
+  constructor(model) {
+    this.model = model;
+  }
+
   /**
    * Add a new task item
    * @param {*} user The User object to add
    */
   async create(user) {
-    const newUser = new UserModel(user);
+    const newUser = this.model.build(user);
+    newUser.password = await generateHash(newUser.password);
     await newUser.save();
   }
 
@@ -15,7 +21,7 @@ class UsersRepository {
    * @param {*} id The id of the user
    */
   async findById(id) {
-    const user = await UserModel.findOne({ _id: id });
+    const user = await this.model.findOne({ where: { id } });
     return user;
   }
 
@@ -24,13 +30,13 @@ class UsersRepository {
    * @param {*} email The email of the user
    */
   async findByEmail(email) {
-    const user = await UserModel.findOne({ email });
+    const user = await this.model.findOne({ where: { email } });
     return user;
   }
 
-  async comparePassword(password) {
-    return UserModel.comparePassword(password);
+  async comparePassword(password, storedPassword) {
+    return await comparePassword(password, storedPassword);
   }
 }
 
-export const usersRepository = new UsersRepository();
+export const usersRepository = new UsersRepository(User);

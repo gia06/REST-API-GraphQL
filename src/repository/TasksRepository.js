@@ -1,12 +1,15 @@
-import { TaskModel } from "../models/Task.js";
+import { Task } from "../models/Task.js";
 
 class TasksRepository {
+  constructor(model) {
+    this.model = model;
+  }
   /**
    * Add a new task item
    * @param {*} task The task object to add
    */
   async save({ title, description, id }) {
-    const newTask = new TaskModel({ title, description, belongsTo: id });
+    const newTask = this.model.build({ title, description, UserId: id });
     await newTask.save();
   }
 
@@ -15,10 +18,11 @@ class TasksRepository {
    * @param {*} userId The id of the user
    */
   async findAll(userId) {
-    const tasks = await TaskModel.find(
-      { belongsTo: userId, done: false },
-      { _id: 0, __v: 0, belongsTo: 0 }
-    );
+    const tasks = await this.model.findAll({
+      where: { UserId: userId, done: false },
+      order: [["createdAt", "DESC"]],
+      attributes: ["title", "description", "done"],
+    });
     return tasks;
   }
 
@@ -27,10 +31,10 @@ class TasksRepository {
    * @param {*} userId The id of the user
    */
   async findDone(userId) {
-    const tasks = await TaskModel.find(
-      { belongsTo: userId, done: true },
-      { _id: 0, __v: 0, belongsTo: 0 }
-    );
+    const tasks = await this.model.findAll({
+      where: { UserId: userId, done: true },
+      attributes: ["title", "description", "done"],
+    });
 
     return tasks;
   }
@@ -40,21 +44,26 @@ class TasksRepository {
    * @param {*} title The title of the task
    * @param {*} userId The id of the user
    */
-  async findByTitle(title, userId) {
-    const user = await TaskModel.findOne({ belongsTo: userId, title });
-
-    return user;
+  async findByTitle(title, UserId) {
+    const task = await this.model.findOne({ where: { title, UserId } });
+    return task;
   }
 
   /**
    * Updates task isDone to true value
    * @param {*} title The title object
-   * @param {*} userID The id of the user
+   * @param {*} UserId The id of the user
    */
-  async markDone(title, userId) {
-    const task = await TaskModel.findOne({ title, belongsTo: userId });
+  async markDone(title, UserId) {
+    const task = await this.model.findOne({
+      where: {
+        title,
+        UserId,
+      },
+    });
 
     task.done = true;
+
     await task.save();
   }
 
@@ -64,9 +73,8 @@ class TasksRepository {
    * @param {*} userID The id of the user
    */
   async update(oldTitle, newTitle, description, userId) {
-    const task = await TaskModel.findOne({
-      title: oldTitle,
-      belongsTo: userId,
+    const task = await this.model.findOne({
+      where: { title: oldTitle, UserId: userId },
     });
 
     task.title = newTitle;
@@ -81,11 +89,8 @@ class TasksRepository {
    * @param {*} userID The id of the user
    */
   async delete(taskId, userId) {
-    await TaskModel.findOneAndDelete({
-      _id: taskId,
-      belongsTo: userId,
-    });
+    await this.model.destroy({ where: { id: taskId, UserId: userId } });
   }
 }
 
-export const tasksRepository = new TasksRepository();
+export const tasksRepository = new TasksRepository(Task);

@@ -8,15 +8,13 @@ import swaggerRoute from "./swagger.js";
 import usersService from "../service/UsersService.js";
 import tasksService from "../service/TasksService.js";
 
-import { TaskModel } from "../models/Task.js";
-
 const router = express.Router();
 
 router.use("/auth", authRoutes({ usersService }));
 router.use(
   "/tasks",
   passport.authenticate("jwt", { session: false }),
-  tasksRoutes({ tasksService, TaskModel })
+  tasksRoutes({ tasksService })
 );
 router.use("/", swaggerRoute());
 

@@ -28,8 +28,8 @@ class UsersService {
     return await usersRepository.findByEmail(email);
   }
 
-  async comparePassword(password) {
-    return await usersRepository.comparePassword(password);
+  async comparePassword(password, storedPassword) {
+    return await usersRepository.comparePassword(password, storedPassword);
   }
 }
 

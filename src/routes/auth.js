@@ -42,7 +42,10 @@ export default (params) => {
 
         const { user } = req.res.locals;
 
-        const result = await user.comparePassword(password);
+        const result = await usersService.comparePassword(
+          password,
+          user.password
+        );
 
         if (!result) {
           logger.error("Incorrect email or password");
@@ -55,7 +58,7 @@ export default (params) => {
 
         return res.status(200).json({ user: { email }, token });
       } catch (err) {
-        logger.error("error is:", err);
+        logger.error(err);
         return res
           .status(505)
           .json({ message: "Something went wrong on the server" });

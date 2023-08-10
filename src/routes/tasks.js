@@ -28,20 +28,6 @@ export default (params) => {
     }
   });
 
-  router.get("/done", async (req, res, next) => {
-    try {
-      const { id } = await decodeJwt(req.headers.authorization);
-      const tasks = await tasksService.findDone(id);
-
-      res.status(200).json(tasks);
-    } catch (err) {
-      next(err);
-      return res
-        .status(505)
-        .json({ message: "Something went wrong on the server" });
-    }
-  });
-
   router.post("/", validateTaskAdd, validResult, async (req, res, next) => {
     try {
       const { title, description } = req.body;
@@ -58,6 +44,20 @@ export default (params) => {
     }
   });
 
+  router.get("/done", async (req, res, next) => {
+    try {
+      const { id } = await decodeJwt(req.headers.authorization);
+      const tasks = await tasksService.findDone(id);
+
+      res.status(200).json(tasks);
+    } catch (err) {
+      next(err);
+      return res
+        .status(505)
+        .json({ message: "Something went wrong on the server" });
+    }
+  });
+
   router.post(
     "/done",
     validateTaskDone,
@@ -65,7 +65,7 @@ export default (params) => {
     async (req, res, next) => {
       try {
         const { task } = req.res.locals;
-        await tasksService.markDone(task.title, task.belongsTo);
+        await tasksService.markDone(task.title, task.UserId);
 
         res
           .status(200)
@@ -89,12 +89,7 @@ export default (params) => {
 
         const { task } = req.res.locals;
 
-        await tasksService.update(
-          task.title,
-          title,
-          description,
-          task.belongsTo
-        );
+        await tasksService.update(task.title, title, description, task.UserId);
 
         res.status(200).json({ message: "A task was successfully updated." });
       } catch (err) {
@@ -114,7 +109,7 @@ export default (params) => {
       try {
         const { task } = req.res.locals;
 
-        await tasksService.delete(task.id, task.belongsTo);
+        await tasksService.delete(task.id, task.UserId);
 
         res.sendStatus(204);
       } catch (err) {
