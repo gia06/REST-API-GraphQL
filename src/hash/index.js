@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 
-export const generateHash = async (password) => {
+export const generateHash = (password) => {
   return bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
 };
 
-export const comparePassword = async function comparePassword(
+export const comparePassword = function comparePassword(
   candidatePassword,
   storedPassword
 ) {
