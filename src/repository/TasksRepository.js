@@ -8,9 +8,10 @@ class TasksRepository {
    * Add a new task item
    * @param {*} task The task object to add
    */
-  async save({ title, description, id }) {
-    const newTask = this.model.build({ title, description, UserId: id });
+  async save({ title, description, userId }) {
+    const newTask = this.model.build({ title, description, UserId: userId });
     await newTask.save();
+    return newTask;
   }
 
   /**
@@ -21,7 +22,7 @@ class TasksRepository {
     const tasks = await this.model.findAll({
       where: { UserId: userId, done: false },
       order: [["createdAt", "DESC"]],
-      attributes: ["title", "description", "done"],
+      attributes: ["id", "title", "description", "done"],
     });
     return tasks;
   }
@@ -50,21 +51,15 @@ class TasksRepository {
   }
 
   /**
-   * Updates task isDone to true value
-   * @param {*} title The title object
-   * @param {*} UserId The id of the user
+   * Find  task by id
+   * @param {*} id The id of the task
    */
-  async markDone(title, UserId) {
+  async findById(taskId, userId) {
     const task = await this.model.findOne({
-      where: {
-        title,
-        UserId,
-      },
+      where: { id: taskId, UserId: userId },
+      attributes: ["title", "description", "done"],
     });
-
-    task.done = true;
-
-    await task.save();
+    return task;
   }
 
   /**
@@ -72,15 +67,17 @@ class TasksRepository {
    * @param {*} title The title object
    * @param {*} userID The id of the user
    */
-  async update(oldTitle, newTitle, description, userId) {
+  async update(taskId, newTitle, newDescription, done, userId) {
     const task = await this.model.findOne({
-      where: { title: oldTitle, UserId: userId },
+      where: { id: taskId, UserId: userId },
     });
 
     task.title = newTitle;
-    task.description = description;
+    task.description = newDescription;
+    task.done = done;
 
     await task.save();
+    return task;
   }
 
   /**

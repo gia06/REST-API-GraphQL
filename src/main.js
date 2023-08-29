@@ -8,6 +8,7 @@ import { connectToMySQL, sequelize } from "./db/connection.js";
 
 import "./auth/passport.js";
 import routes from "./routes/index.js";
+import graphqlRoute from "./graphql/index.js";
 import { logger } from "./logger/logger.js";
 
 const app = express();
@@ -16,6 +17,8 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use("/graphql", graphqlRoute);
 
 app.use("/api", routes);
 

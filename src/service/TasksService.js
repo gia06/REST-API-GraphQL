@@ -8,8 +8,9 @@ class TasksService {
    * Add a new task item
    * @param {*} task The task object to add
    */
-  async save({ title, description, id }) {
-    await tasksRepository.save({ title, description, id });
+  async save({ title, description, userId }) {
+    const newTask = await tasksRepository.save({ title, description, userId });
+    return newTask;
   }
 
   /**
@@ -38,6 +39,14 @@ class TasksService {
   }
 
   /**
+   * Find  task by id
+   * @param {*} id The id of the task
+   */
+  async findById(taskId, userId) {
+    return await tasksRepository.findById(taskId, userId);
+  }
+
+  /**
    * Updates task isDone to true value
    * @param {*} title The title object
    * @param {*} userID The id of the user
@@ -51,8 +60,14 @@ class TasksService {
    * @param {*} title The title object
    * @param {*} userID The id of the user
    */
-  async update(oldTitle, newTitle, description, userId) {
-    await tasksRepository.update(oldTitle, newTitle, description, userId);
+  async update(taskId, newTitle, newDescription, done, userId) {
+    return await tasksRepository.update(
+      taskId,
+      newTitle,
+      newDescription,
+      done,
+      userId
+    );
   }
 
   /**
